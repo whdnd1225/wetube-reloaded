@@ -1,4 +1,5 @@
 import User from '../models/User';
+import Video from '../models/Video';
 import fetch from 'node-fetch';
 import bcrypt from 'bcrypt';
 
@@ -235,10 +236,97 @@ export const finishKakaoLogin = async (req, res) => {
   }
 };
 
-export const edit = (req, res) => res.send('Edit User');
-export const remove = (req, res) => res.send('Remove User');
 export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect('/');
 };
-export const see = (req, res) => res.send('see');
+
+export const getEdit = (req, res) => {
+  res.render('edit-profile', { pageTitle: 'Edit Profile' });
+};
+
+export const postEdit = async (req, res) => {
+  const {
+    session: {
+      user: { _id, username: sessionUserName, email: sessionEmail, avatarUrl },
+    },
+    body: { name, email, username, location },
+    file,
+  } = req;
+
+  if (sessionEmail !== email || sessionUserName !== username) {
+    const checkUser = await User.find({ $or: [{ email }, { username }] });
+
+    const checkUserNum = checkUser.find((user) => {
+      const { _id: userId } = user;
+      return userId.toString() !== _id;
+    });
+
+    if (checkUserNum) {
+      return res.status(400).render('edit-profile', {
+        pageTitle: 'Edit Profile',
+        errorMessage: 'Exist Email/UserName',
+      });
+    }
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    _id,
+    {
+      avatarUrl: file ? file.path : avatarUrl,
+      name,
+      email,
+      username,
+      location,
+    },
+    { new: true }
+  );
+  req.session.user = updatedUser;
+  return res.redirect('/users/edit');
+};
+
+export const getChangePassword = (req, res) => {
+  return res.render('users/change-password', { pageTitle: 'Change Password' });
+};
+
+export const postChangePassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id, password },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirmation },
+  } = req;
+
+  const ok = await bcrypt.compare(oldPassword, password);
+  if (!ok) {
+    return res.status(400).render('users/change-password', {
+      pageTitle: 'Change Password',
+      errorMessage: 'The current password is incorrect.',
+    });
+  }
+
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render('users/change-password', {
+      pageTitle: 'Change Password',
+      errorMessage: 'The password does not match the confirmation',
+    });
+  }
+
+  const user = await User.findById(_id);
+  user.password = newPassword;
+  await user.save();
+  req.session.user.password = user.password;
+
+  return res.redirect('/');
+};
+
+export const remove = (req, res) => res.send('Remove User');
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id).populate('videos');
+  if (!user) {
+    return res.status(404).render('404', { pageTitle: 'User not found.' });
+  }
+
+  return res.render('users/profile', { pageTitle: user.name, user });
+};
