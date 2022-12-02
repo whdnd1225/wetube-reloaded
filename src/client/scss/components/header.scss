@@ -16,6 +16,10 @@ header {
       font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
+      span {
+        font-size: 40px;
+        border-radius: 50%;
+      }
     }
     i {
       font-size: 16px;
@@ -26,5 +30,10 @@ header {
     color: $bg;
     padding: 5px 10px;
     border-radius: 5px;
+  }
+  .header__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
   }
 }
