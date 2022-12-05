@@ -64,10 +64,6 @@ const handleLoadedMetadata = () => {
 const handleTimeUpdate = () => {
   currentTime.innerText = formatTime(Math.floor(video.currentTime));
   timeline.value = Math.floor(video.currentTime);
-
-  if (video.currentTime === video.duration) {
-    playBtnIcon.classList = 'fas fa-play';
-  }
 };
 
 const handleTimelineChange = (event) => {
@@ -121,11 +117,20 @@ const handleGlobalKeyDown = (e) => {
   }
 };
 
+const handleEnded = () => {
+  playBtnIcon.classList = 'fas fa-play';
+  const { id } = videoContainer.dataset;
+  fetch(`/api/videos/${id}/view`, {
+    method: 'POST',
+  });
+};
+
 playBtn.addEventListener('click', handlePlayClick);
 muteBtn.addEventListener('click', handleMuteClick);
 volumeRange.addEventListener('input', handleVolumeChange);
 video.addEventListener('loadeddata', handleLoadedMetadata);
 video.addEventListener('timeupdate', handleTimeUpdate);
+video.addEventListener('ended', handleEnded);
 videoContainer.addEventListener('mousemove', handleMouseMove);
 videoContainer.addEventListener('mouseleave', handleMouseLeave);
 timeline.addEventListener('input', handleTimelineChange);
