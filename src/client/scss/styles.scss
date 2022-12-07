@@ -1,8 +1,8 @@
 // Config
 @import './config/_variables.scss';
 @import './config/_reset.scss';
-// Components
 
+// Components
 @import './components/header.scss';
 @import './components/footer.scss';
 @import './components/video.scss';
@@ -12,10 +12,10 @@
 @import './components/video-player.scss';
 
 // Screens
-
 @import './screens/search.scss';
 @import './screens/profile.scss';
 @import './screens/edit-profile.scss';
+@import './screens/upload.scss';
 
 // Defaults
 a {
