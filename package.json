@@ -7,8 +7,12 @@
     "url": "git+https://github.com/whdnd1225/wetube-reloaded.git"
   },
   "scripts": {
+    "start": "node build/init.js",
+    "build": "npm run build:server && npm run build:assets",
+    "build:server": "babel src -d build",
+    "build:assets": "webpack --mode=production",
     "dev:server": "nodemon",
-    "dev:assets": "webpack"
+    "dev:assets": "webpack --mode=development -w"
   },
   "author": "whdnd1225@naver.com",
   "license": "MIT",
@@ -34,7 +38,8 @@
     "webpack-cli": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.2",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.20.5",
     "@babel/node": "^7.20.2",
     "@babel/preset-env": "^7.20.2",
     "babel-loader": "^9.1.0",
