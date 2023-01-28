@@ -1,5 +1,7 @@
 # Wetube Reloaded
 
+https://wetube-clone-whdnd.fly.dev/
+
 / -> home
 /join -> Join
 /login -> Login
